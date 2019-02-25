@@ -21,6 +21,10 @@ import sony.playstation.service.FeatureFlagsService;
 import sony.playstation.web.model.IdentityInfoPresentationModel;
 import sony.playstation.web.model.InputCode;
 
+/**
+ * This Class is used to test the FeatureFlagsServiceImpl
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration ("classpath:/spring-config-test.xml")
 public class FeatureFlagsServiceImplTest {

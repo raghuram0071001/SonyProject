@@ -65,6 +65,31 @@ public class FeatureFlagsServiceImpl implements FeatureFlagsService{
 		return returnModel;
 	}
 	
+	//This private method is used to convert the PersistenceObject to the Presentation Model
+		private IdentityInfoPresentationModel convertToPresentationAndReturnObj(Object[] persistenceObject) throws JsonParseException, JsonMappingException, IOException {
+			
+			IdentityInfoPresentationModel returnModel = new IdentityInfoPresentationModel();
+			if(persistenceObject[0] == HttpStatus.OK && persistenceObject[1] != null){
+				//Convert to presentation object
+				List<CurrentIdentityInfo> infoList  = convertPersistenceResponseToPresentation((String) persistenceObject[1]);
+				
+				//Now look for the value of Idendtity_Information from the list of objects, prepare bit map 
+				Object[] o  = computeAndPrepareBitMap(infoList, persistenceObject);
+				returnModel.setStatus((HttpStatus)o[0]);
+				if(o[1] != null) {
+				returnModel.setBitMap((LinkedHashMap<String,Integer>)o[1]);
+				}
+			}
+			else if(persistenceObject[0] == HttpStatus.OK && persistenceObject[1] == null) {
+				returnModel.setStatus(HttpStatus.NO_CONTENT);
+				returnModel.setBitMap(null);
+			}else {
+				returnModel.setStatus((HttpStatus)persistenceObject[0]);
+				returnModel.setBitMap(null);
+			}
+			
+			return returnModel;
+		}
 	
 	//Conversion of response of JSON STRING to respective java object
 	private List<CurrentIdentityInfo> convertPersistenceResponseToPresentation(String responseString) throws JsonParseException, JsonMappingException, IOException {
@@ -83,7 +108,26 @@ public class FeatureFlagsServiceImpl implements FeatureFlagsService{
 		return infoList;
 	}
 	
+private Object[] computeAndPrepareBitMap(List<CurrentIdentityInfo> infoList, Object[] persistenceObject) {
+		
+		Object[] returnObject = new Object[2]; 
+		if(infoList != null && infoList.size() > 0) {
+			 for(CurrentIdentityInfo identityInfo: infoList) {
+				 if(identityInfo.getName().equals(ProjectConstants.identityInfoName)) {				 
+					 returnObject = convertIntegerValueToBitMap(identityInfo.getValue());
+					 break;					 
+				 }
+			 }
+			}
+			else {
+				returnObject = persistenceObject;
+			}
+		
+		return returnObject;
+	}
+
 	
+	//This private method is used to convert the Integer value(Identity_Information) to BitMap and returns an Object
 	private Object[] convertIntegerValueToBitMap(int identityInfoValue){
 		
 		Object[] o = new Object[2];
@@ -119,47 +163,6 @@ public class FeatureFlagsServiceImpl implements FeatureFlagsService{
 		return o;		
 	}
 	
-	private Object[] computeAndPrepareBitMap(List<CurrentIdentityInfo> infoList, Object[] persistenceObject) {
-		
-		Object[] returnObject = new Object[2]; 
-		if(infoList != null && infoList.size() > 0) {
-			 for(CurrentIdentityInfo identityInfo: infoList) {
-				 if(identityInfo.getName().equals(ProjectConstants.identityInfoName)) {
-					 
-					 returnObject = convertIntegerValueToBitMap(identityInfo.getValue());
-					 break;					 
-				 }
-			 }
-			}
-			else {
-				returnObject = persistenceObject;
-			}
-		
-		return returnObject;
-	}
-
-	private IdentityInfoPresentationModel convertToPresentationAndReturnObj(Object[] persistenceObject) throws JsonParseException, JsonMappingException, IOException {
-		
-		IdentityInfoPresentationModel returnModel = new IdentityInfoPresentationModel();
-		if(persistenceObject[0] == HttpStatus.OK && persistenceObject[1] != null){
-			//Convert to presentation object
-			List<CurrentIdentityInfo> infoList  = convertPersistenceResponseToPresentation((String) persistenceObject[1]);
-			
-			//Now look for the value of Idendtity_Information from the list of objects, prepare bit map 
-			Object[] o  = computeAndPrepareBitMap(infoList, persistenceObject);
-			returnModel.setStatus((HttpStatus)o[0]);
-			if(o[1] != null) {
-			returnModel.setBitMap((LinkedHashMap<String,Integer>)o[1]);
-			}
-		}
-		else if(persistenceObject[0] == HttpStatus.OK && persistenceObject[1] == null) {
-			returnModel.setStatus(HttpStatus.NO_CONTENT);
-			returnModel.setBitMap(null);
-		}else {
-			returnModel.setStatus((HttpStatus)persistenceObject[0]);
-			returnModel.setBitMap(null);
-		}
-		
-		return returnModel;
-	}
+	
+	
 }

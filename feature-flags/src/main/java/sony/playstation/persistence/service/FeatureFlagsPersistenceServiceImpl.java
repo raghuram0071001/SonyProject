@@ -25,7 +25,9 @@ import sony.playstation.web.model.InputCode;
 @Component
 public class FeatureFlagsPersistenceServiceImpl implements FeatureFlagsPersistenceService {
 
-	
+	/**
+	 * This Method returns the object after conversion of the response from the FF Service to an Object with Http Status
+	 */
 	@Override
 	public Object[] getCurrentIdentityInfo(String url) throws Exception {
 	   
@@ -65,6 +67,9 @@ public class FeatureFlagsPersistenceServiceImpl implements FeatureFlagsPersisten
 		return o;
 	}
 	
+	/**
+	 * This method is used to save the IdentityInfo based on the WEB UI Inputs
+	 */
 	@Override
 	public Object[] saveIdentityInfo(String url, InputCode inputCode) throws Exception {
 		
@@ -117,7 +122,9 @@ public class FeatureFlagsPersistenceServiceImpl implements FeatureFlagsPersisten
 		
 		return o;
 	}
+
 	
+//This Private method is used to convert the HttpResponse to a String 
 private String responseString(HttpURLConnection con) throws IOException, NullPointerException {
 			
 	StringBuilder content = null;
@@ -135,6 +142,7 @@ private String responseString(HttpURLConnection con) throws IOException, NullPoi
 	
 	}
 
+//This private method converts BitMap based on the WEB UI to Integer Value to store as Identity_Information value using FF Service
 private int getIntegerValueByBitMap(LinkedHashMap<String, Integer> bitMap) {
 	
 	int identityInfoValue = 0;
@@ -152,6 +160,7 @@ private int getIntegerValueByBitMap(LinkedHashMap<String, Integer> bitMap) {
     return identityInfoValue;
 }
 
+//This private method is used to convert Binary Value(From BitMap) to Decimal Value
 private int convertBinaryToDecimal(int binaryValueOfBitMap){
 	
 	int decimalValue = 0;
